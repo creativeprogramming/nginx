@@ -54,3 +54,13 @@ task :build => :chdir do
   Rake::Task[:configure].execute unless File.exists? 'Makefile'
   sh 'make', '--jobs=%d' % (ENV['JOBS'] || 2).to_i
 end
+
+desc 'Install Nginx'
+task :install => :build do
+  system 'make install'
+end
+
+desc 'Upgrade Nginx'
+task :upgrade => :build do
+  system 'make upgrade'
+end
