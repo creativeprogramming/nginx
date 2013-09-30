@@ -445,8 +445,7 @@ ngx_http_file_cache_lock_wait_handler(ngx_event_t *ev)
     timer = c->wait_time - ngx_current_msec;
 
     if ((ngx_msec_int_t) timer <= 0) {
-        ngx_log_debug0(NGX_LOG_DEBUG_HTTP, ev->log, 0,
-                       "http file cache lock timeout");
+        ngx_log_error(NGX_LOG_INFO, ev->log, 0, "cache lock timeout");
         c->lock = 0;
         goto wakeup;
     }
@@ -504,7 +503,7 @@ ngx_http_file_cache_read(ngx_http_request_t *r, ngx_http_cache_t *c)
         return NGX_DECLINED;
     }
 
-    if (h->body_start > c->body_start) {
+    if ((size_t) h->body_start > c->body_start) {
         ngx_log_error(NGX_LOG_CRIT, r->connection->log, 0,
                       "cache file \"%s\" has too long header",
                       c->file.name.data);

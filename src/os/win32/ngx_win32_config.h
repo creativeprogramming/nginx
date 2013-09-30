@@ -9,6 +9,7 @@
 #define _NGX_WIN32_CONFIG_H_INCLUDED_
 
 
+#undef  WIN32
 #define WIN32         0x0400
 #define _WIN32_WINNT  0x0501
 
@@ -35,6 +36,12 @@
 #include <mswsock.h>
 #include <shellapi.h>
 #include <stddef.h>    /* offsetof() */
+
+#ifdef __GNUC__
+/* GCC MinGW's stdio.h includes sys/types.h */
+#define _OFF_T_
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -128,12 +135,34 @@ typedef unsigned short int  uint16_t;
 
 typedef __int64             int64_t;
 typedef unsigned __int64    uint64_t;
+
+#ifndef __WATCOMC__
 typedef int                 intptr_t;
 typedef u_int               uintptr_t;
+#endif
+
 
 /* Windows defines off_t as long, which is 32-bit */
 typedef __int64             off_t;
 #define _OFF_T_DEFINED
+
+#ifdef __WATCOMC__
+
+/* off_t is redefined by sys/types.h used by zlib.h */
+#define __TYPES_H_INCLUDED
+typedef int                 dev_t;
+typedef unsigned int        ino_t;
+
+#elif __BORLANDC__
+
+/* off_t is redefined by sys/types.h used by zlib.h */
+#define __TYPES_H
+
+typedef int                 dev_t;
+typedef unsigned int        ino_t;
+
+#endif
+
 
 typedef int                 ssize_t;
 typedef uint32_t            in_addr_t;
